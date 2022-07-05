@@ -1,7 +1,18 @@
 # mysql
 spring:
+  #redis配置
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 1000
+    jedis:
+      pool:
+        min-idle: 5
+        max-idle: 10
+        max-wait: -1
+
   datasource:
-    #MySQL??
+    #MySQL配置
     driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/easyproject?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
     username: root
