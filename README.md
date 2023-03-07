@@ -1,5 +1,7 @@
 # sport-health
 
+![架构图](./images/README/image-20230307211453710.png)
+
 ## 1. 该项目是什么？
 
 该项目是基于Vue+Springboot前后端分离的个人运动健康项目，当前仓库为后台管理部分
