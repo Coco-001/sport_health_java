@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.mapper.SysPermissionMapper">
+
+
+    <!-- 分页查询权限数据 -->
+    <select id="findPage" resultType="com.coco.entity.SysPermission">
+        select * from sys_permission
+        <if test="queryString != null and queryString.length > 0">
+            where label like concat('%', #{queryString}, '%') or code like concat('%', #{queryString}, '%')
+        </if>
+    </select>
+
+    <!-- 添加权限数据 -->
+    <insert id="insert" parameterType="com.coco.entity.SysPermission">
+        insert into sys_permission(label, `code`, status) values (#{label}, #{code}, #{status})
+    </insert>
+
+    <!-- 删除权限数据 -->
+    <delete id="delete" parameterType="java.lang.Long">
+        delete from sys_permission where id = #{id}
+    </delete>
+
+    <!-- 修改权限数据 -->
+    <update id="update" parameterType="com.coco.entity.SysPermission">
+        update sys_permission
+        <set>
+            <if test="label != null">
+                label = #{label},
+            </if>
+            <if test="code != null">
+                `code` = #{code},
+            </if>
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 根据角色ID查询权限信息 -->
+    <select id="findByRoleId" resultType="com.coco.entity.SysPermission">
+        select * from sys_permission where id in (select permission_id from roles_permissions where role_id = #{roleId}) and status = 1
+    </select>
+
+    <select id="findAll" resultType="com.coco.entity.SysPermission">
+        select * from sys_permission
+    </select>
+</mapper>

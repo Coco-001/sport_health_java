@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.mapper.SysUserMapper">
+
+    <!-- 用户信息结果 -->
+    <resultMap id="mainMap" type="com.coco.entity.SysUser">
+        <id column="id" property="id"/>
+        <result column="user_name" property="userName"/>
+        <result column="password" property="password"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="sex" property="sex"/>
+        <result column="avatar" property="avatar"/>
+        <result column="address" property="address"/>
+        <result column="open_id" property="openId"/>
+        <result column="status" property="status"/>
+        <result column="admin" property="admin"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="email" property="email"/>
+    </resultMap>
+
+    <!-- 角色结果 -->
+    <resultMap id="roleMap" type="com.coco.entity.SysRole">
+        <id column="id" property="id"/>
+        <result column="label" property="label"/>
+        <result column="code" property="code"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 菜单结果 -->
+    <resultMap id="menuMap" type="com.coco.entity.SysMenu">
+        <id column="id" property="id"/>
+        <result column="path" property="path"/>
+        <result column="icon" property="icon"/>
+        <result column="title" property="title"/>
+        <result column="component" property="component"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 权限结果 -->
+    <resultMap id="permissionMap" type="com.coco.entity.SysPermission">
+        <id column="id" property="id"/>
+        <result column="label" property="label"/>
+        <result column="code" property="code"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 获取用户信息 -->
+    <select id="findByUsername" parameterType="java.lang.String" resultMap="mainMap">
+        select * from sys_user where (user_name = #{value} or phone_number = #{value} or open_id=#{value})
+    </select>
+
+    <!-- 根据用户ID查询角色信息 -->
+    <select id="findRoles" parameterType="int" resultMap="roleMap">
+        select * from sys_role where status = 1
+        <if test="userId != null">
+            and id in (select role_id from user_roles where user_id = #{userId})
+        </if>
+    </select>
+
+    <!-- 根据角色ID查询数据权限信息 -->
+    <select id="findPermissions" parameterType="int" resultMap="permissionMap">
+        select * from sys_permission where status = 1
+        <if test="userId">
+            and id in (select permission_id from roles_permissions where role_id in (select role_id from user_roles where user_id = #{userId}))
+        </if>
+    </select>
+
+    <!-- 根据角色ID查询菜单信息 -->
+    <select id="findMenus" parameterType="int" resultMap="menuMap">
+        select * from sys_menu where parent_id is null and status = 1
+        <if test="userId">
+            and id in (select menu_id from roles_menus where role_id in (select role_id from user_roles where user_id = #{userId}))
+        </if>
+    </select>
+
+    <!-- 获取子菜单信息 -->
+    <select id="findChildrenMenu" parameterType="int" resultType="com.coco.entity.SysMenu">
+        select * from sys_menu where parent_id = #{id} and status = 1
+        <if test="userId != null">
+            and id in (select menu_id from roles_menus where role_id in (select role_id from user_roles where user_id = #{userId}))
+        </if>
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="findPage" resultMap="mainMap">
+        select * from sys_user
+        <if test="queryString != null and queryString.length > 0">
+            where user_name like concat('%', #{queryString}, '%')
+            or nick_name like concat('%', #{queryString}, '%')
+            or phone_number like concat('%', #{queryString}, '%')
+        </if>
+    </select>
+
+    <!-- 添加用户信息 -->
+    <insert id="insert" parameterType="com.coco.entity.SysUser" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        sys_user(user_name, `password`, nick_name, sex, avatar, address, open_id, `status`, admin, phone_number, email)
+        values(#{userName}, #{password}, #{nickName}, #{sex}, #{avatar}, #{address},
+        #{openId}, #{status}, #{admin}, #{phoneNumber}, #{email})
+    </insert>
+
+    <!-- 修改用户信息 -->
+    <update id="update" parameterType="com.coco.entity.SysUser">
+        update sys_user
+        <set>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="nickName != null">
+                nick_name = #{nickName},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="openId != null">
+                open_id = #{openId},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="admin != null">
+                admin = #{admin},
+            </if>
+            <if test="phoneNumber != null">
+                phone_number = #{phoneNumber},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 修改用户信息 -->
+    <update id="updateByopenId" parameterType="com.coco.entity.SysUser">
+        update sys_user
+        <set>
+            <if test="nickName != null">
+                nick_name = #{nickName},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="phoneNumber != null">
+                phone_number = #{phoneNumber},
+            </if>
+        </set>
+        where open_id=#{openId}
+    </update>
+
+    <!-- 根据用户ID删除用户信息 -->
+    <delete id="delete" parameterType="java.lang.Long">
+        delete from sys_user where id = #{id}
+    </delete>
+
+    <!-- 根据用户信息中的角色列表，去添加用户的角色 -->
+    <insert id="insertUserRoles">
+        insert into user_roles values(#{userId}, #{roleId})
+    </insert>
+
+    <!-- 根据用户ID去删除角色列表 -->
+    <delete id="deleteRolesByUserId">
+        delete from user_roles where user_id = #{userId}
+    </delete>
+
+    <!-- 根据ID查询用户信息 -->
+    <select id="findById" parameterType="java.lang.Long" resultType="com.coco.entity.SysUser">
+        select * from sys_user where id = #{id}
+    </select>
+
+</mapper>

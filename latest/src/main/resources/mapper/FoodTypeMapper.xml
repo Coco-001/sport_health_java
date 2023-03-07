@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.mapper.FoodTypeMapper">
+
+    <resultMap id="mainMap" type="com.coco.entity.FoodType">
+        <id column="id"  property="id"/>
+        <result column="title"  property="title"/>
+        <result column="icon"  property="icon"/>
+        <collection  property="foods" select="findChildren" column="id" ofType="com.coco.entity.FoodType"/>
+    </resultMap>
+
+    <!-- 分页查询菜品分类 -->
+    <select id="findPage" parameterType="java.lang.String" resultMap="mainMap">
+        SELECT
+            *
+        FROM
+            food_type
+        <if test="queryString != null and queryString.length > 0">
+            where title LIKE CONCAT('%', #{queryString}, '%')
+        </if>
+    </select>
+
+    <select id="findChildren" parameterType="int" resultType="com.coco.entity.Food">
+        select * from food where type_id = #{id}
+    </select>
+
+    <!-- 查询所有分类 -->
+    <select id="typeAll" resultType="com.coco.entity.FoodType">
+        select * from food_type
+    </select>
+
+    <!-- 根据分类名称查询信息 -->
+    <select id="findByTitle" parameterType="java.lang.String" resultType="com.coco.entity.FoodType">
+        select * from food_type where title = #{title}
+    </select>
+
+    <!-- 添加菜品分类 -->
+    <insert id="insert" parameterType="com.coco.entity.FoodType">
+        insert into food_type(title, icon) values(#{title}, #{icon})
+    </insert>
+
+    <!-- 删除菜品分类 -->
+    <delete id="delete">
+        delete from food_type where id = #{id}
+    </delete>
+
+    <!-- 修改菜品分类 -->
+    <update id="update" parameterType="com.coco.entity.FoodType">
+        update food_type
+        <set>
+            <if test="title != null and title.length > 0">
+                title = #{title},
+            </if>
+            <if test="icon != null and icon.length > 0">
+                icon = #{icon},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,68 @@
+# 配置端口信息
+server:
+  port: 8000
+
+# 配置项目名称
+spring:
+  author: coco
+  application:
+    name: sport
+  # 使用本地配置
+  profiles:
+    active: dev
+  # 设置文件上传最大大小，默认1M
+  servlet:
+    multipart:
+      max-file-size: 30MB
+
+# 配置mybatis
+mybatis:
+  # mapper接口找的xml文件
+  mapper-locations: classpath:mapper/*.xml
+  # 扫描的实体类
+  type-aliases-package: com.ajie.entity
+  # mybaits内置的配置
+  configuration:
+    # sql日志打印
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 开启驼峰命名
+    map-underscore-to-camel-case: true
+
+
+# redis相关配置
+
+
+# jwt配置
+jwt:
+  # 请求头
+  tokenHeader: Authorization
+  # 签名加盐
+  secret: coco123
+  # jwt过期时间
+  expiration: 1800000
+  # token头部
+  tokenHead: 'Bearer '
+
+# 配置七牛云
+qiniu:
+  accessKey:
+  secretKey:
+  bucket:
+
+
+# 配置阿里云短信服务
+aliyun:
+  # ak
+  accessKey:
+  # sk
+  secretKey:
+  # 签名
+  signName:
+  # 短信模板
+  templateCode:
+
+# 微信小程序
+mini:
+  # 密钥
+  appid:
+  secret:

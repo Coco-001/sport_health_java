@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.mapper.GoodsMapper">
+    <!-- 分页查询 -->
+    <select id="findPage" parameterType="java.lang.String" resultType="com.coco.entity.Goods">
+        select * from goods
+        <if test="queryString != null and queryString.length > 0">
+            where `name` like concat('%', #{queryString}, '%')
+        </if>
+    </select>
+
+    <!-- 根据编号查询运动信息 -->
+    <select id="findById" parameterType="int" resultType="com.coco.entity.Goods">
+        select * from goods where id = #{id}
+    </select>
+
+    <!-- 导出报表 -->
+    <select id="findAll" resultType="com.coco.entity.Goods">
+        select g.`name`, g.price, g.number, g.create_time, g.model_type, g.control_mode,
+            g.main_function, g.wifi_function, g.battery, g.characteristic, g.size, g.other
+        from goods g
+    </select>
+
+    <!-- 根据运动名称查询运动信息 -->
+    <select id="findByName" parameterType="String" resultType="com.coco.entity.Goods">
+        select * from goods where `name` = #{name}
+    </select>
+    
+    <!-- 修改用户信息 -->
+    <update id="update">
+        update goods
+        <set>
+            <if test="name != null and name.length > 0">
+                `name` = #{name},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="number != null">
+                `number` = #{number},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createUserId != null">
+                create_user_id = #{createUserId},
+            </if>
+            <if test="imageUrl != null">
+                image_url = #{imageUrl},
+            </if>
+            <if test="modelType != null">
+                model_type = #{modelType},
+            </if>
+            <if test="controlMode != null">
+                control_mode = #{controlMode},
+            </if>
+            <if test="mainFunction != null">
+                main_function = #{mainFunction},
+            </if>
+            <if test="wifiFunction != null">
+                wifi_function = #{wifiFunction},
+            </if>
+            <if test="battery != null">
+                battery = #{battery},
+            </if>
+            <if test="characteristic != null">
+                characteristic = #{characteristic},
+            </if>
+            <if test="size != null">
+                `size` = #{size},
+            </if>
+            <if test="other != null">
+                `other` = #{other},
+            </if>
+            <if test="remark != null">
+                remark = #{remark}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 添加运动项目 -->
+    <insert id="insert">
+        insert into goods values
+        (null, #{name}, #{price}, #{number}, #{createTime}, #{createUserId}, #{imageUrl}, #{modelType},
+        #{controlMode}, #{mainFunction}, #{wifiFunction}, #{battery}, #{characteristic}, #{size}, #{other}, #{remark})
+    </insert>
+
+    <delete id="delete">
+        delete from goods where id = #{id}
+    </delete>
+</mapper>

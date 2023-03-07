@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.mapper.SysMenuMapper">
+
+    <resultMap id="menuMap" type="com.coco.entity.SysMenu">
+        <id column="id" property="id"/>
+        <result column="path" property="path"/>
+        <result column="icon" property="icon"/>
+        <result column="title" property="title"/>
+        <result column="component" property="component"/>
+        <result column="status" property="status"/>
+        <collection property="children" select="findChildren" column="id" ofType="com.coco.entity.SysMenu"/>
+    </resultMap>
+
+    <select id="findParent" resultMap="menuMap">
+        select * from sys_menu where parent_id is null
+    </select>
+
+    <!-- 分页查询权限数据 -->
+    <select id="findPage" resultMap="menuMap">
+        select * from sys_menu where parent_id is null
+        <if test="queryString != null and queryString.length > 0">
+            and title like concat('%', #{queryString}, '%')
+        </if>
+    </select>
+
+    <!-- 获取子菜单信息 -->
+    <select id="findChildren" parameterType="int" resultType="com.coco.entity.SysMenu">
+        select * from sys_menu where parent_id = #{id}
+    </select>
+
+    <!-- 添加权限数据 -->
+    <insert id="insert" parameterType="com.coco.entity.SysMenu">
+        insert into sys_menu
+        (path, icon, title, component,parent_id, status)
+        values
+        (#{path}, #{icon}, #{title}, #{component}, #{parentId}, #{status})
+    </insert>
+
+    <!-- 删除权限数据 -->
+    <delete id="delete" parameterType="java.lang.Long">
+        delete from sys_menu where id = #{id}
+    </delete>
+
+    <!-- 修改权限数据 -->
+    <update id="update" parameterType="com.coco.entity.SysPermission">
+        update sys_menu
+        <set>
+            <if test="path != null">
+                path = #{path},
+            </if>
+            <if test="icon != null">
+                icon = #{icon},
+            </if>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="component != null">
+                component = #{component},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId},
+            </if>
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 根据角色ID查询父级级菜单 -->
+    <select id="findByRoleId" resultType="com.coco.entity.SysMenu">
+        select * from sys_menu where parent_id is null and id in (select menu_id from roles_menus where role_id = #{roleId})
+    </select>
+
+    <!-- 根据角色ID查询对应的子菜单 -->
+    <select id="findByRoleIdAndParentId" resultType="com.coco.entity.SysMenu">
+        select * from sys_menu where parent_id = #{parentId} and id in (select menu_id from roles_menus where role_id = #{roleId})
+    </select>
+
+</mapper>

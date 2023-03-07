@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.mapper.MotionMapper">
+    <!-- 分页查询 -->
+    <select id="findPage" parameterType="java.lang.String" resultType="com.coco.entity.Motion">
+        select * from motion
+        <if test="queryString != null and queryString.length > 0">
+            where `name` like concat('%', #{queryString}, '%') or beneficial_position like concat('%', #{queryString}, '%')
+        </if>
+    </select>
+
+    <!-- 根据编号查询运动信息 -->
+    <select id="findById" parameterType="long" resultType="com.coco.entity.Motion">
+        select * from motion where id = #{id}
+    </select>
+
+    <!-- 根据运动名称查询运动信息 -->
+    <select id="findByName" parameterType="String" resultType="com.coco.entity.Motion">
+        select * from motion where `name` = #{name}
+    </select>
+    
+    <!-- 修改用户信息 -->
+    <update id="update">
+        update motion
+        <set>
+            <if test="name != null and name.length > 0">
+                `name` = #{name},
+            </if>
+            <if test="applicableAge != null and applicableAge.length > 0">
+                applicable_age = #{applicableAge},
+            </if>
+            <if test="beneficialPosition != null and beneficialPosition.length > 0">
+                beneficial_position = #{beneficialPosition},
+            </if>
+            <if test="introduction != null and introduction.length > 0">
+                introduction = #{introduction}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 添加运动项目 -->
+    <insert id="insert">
+        insert into motion(`name`, applicable_age, beneficial_position, introduction) values (#{name}, #{applicableAge}, #{beneficialPosition}, #{introduction})
+    </insert>
+
+    <delete id="delete">
+        delete from motion where id = #{id}
+    </delete>
+</mapper>

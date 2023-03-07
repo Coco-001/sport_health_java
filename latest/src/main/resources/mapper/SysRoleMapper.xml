@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.mapper.SysRoleMapper">
+
+    <resultMap id="roleMap" type="com.coco.entity.SysRole">
+        <id column="id" property="id"/>
+        <result column="label" property="label"/>
+        <result column="code" property="code"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 分页查询角色数据 -->
+    <select id="findPage" resultMap="roleMap">
+        select * from sys_role
+        <if test="queryString != null and queryString.length > 0">
+            where label like concat('%', #{queryString}, '%') or code like concat('%', #{queryString}, '%')
+        </if>
+    </select>
+
+    <!-- 添加角色数据  keyProperty指定返回自增的属性名 useGeneratedKeys是否使用自增ID -->
+    <insert id="insert" parameterType="com.coco.entity.SysRole" keyProperty="id" useGeneratedKeys="true">
+        insert into sys_role
+        (label, code, status)
+        values
+        (#{label}, #{code}, #{status})
+    </insert>
+
+    <!-- 删除角色数据 -->
+    <delete id="delete" parameterType="java.lang.Long">
+        delete from sys_role where id = #{id}
+    </delete>
+
+    <!-- 修改角色数据 -->
+    <update id="update" parameterType="com.coco.entity.SysRole">
+        update sys_role
+        <set>
+            <if test="label != null">
+                label = #{label},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 删除角色拥有的菜单信息 -->
+    <delete id="deleteMenuById" parameterType="java.lang.Long">
+        delete from roles_menus where role_id = #{roleId}
+    </delete>
+
+    <!-- 删除角色拥有的权限信息 -->
+    <delete id="deletePermissionById" parameterType="java.lang.Long">
+        delete from roles_permissions where role_id = #{roleId}
+    </delete>
+
+    <!-- 根据角色ID查询角色信息 -->
+    <select id="findById" resultType="com.coco.entity.SysRole">
+        select * from sys_role where id = #{id}
+    </select>
+
+    <!-- 添加角色对应的权限信息 -->
+    <insert id="insertPermissions">
+        insert into roles_permissions values(#{roleId}, #{permissionId})
+    </insert>
+
+    <!-- 添加角色对应的菜单信息 -->
+    <insert id="insertMenus">
+        insert into roles_menus values(#{roleId}, #{menuId})
+    </insert>
+
+    <!-- 根据角色名称查询角色信息 -->
+    <select id="findByLabel" parameterType="java.lang.String" resultType="com.coco.entity.SysRole">
+        select * from sys_role where label = #{code}
+    </select>
+
+
+    <select id="findAll" resultType="com.coco.entity.SysRole">
+        select id, label from sys_role where status = 1
+    </select>
+
+</mapper>

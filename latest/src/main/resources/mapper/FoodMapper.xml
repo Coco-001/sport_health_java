@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.mapper.FoodMapper">
+
+    <!-- 添加菜品分类 -->
+    <insert id="insert" parameterType="com.coco.entity.Food">
+        insert into food values
+        (null, #{title}, #{typeId}, #{imageUrls}, #{nutrient}, #{heat}, #{protein}, #{fat}, #{carbonWater}, #{dietaryFiber}, #{vitaminA},
+        #{vitaminC}, #{vitaminE}, #{carrot}, #{vitaminB1}, #{vitaminB2}, #{niacin}, #{cholesterol}, #{magnesium}, #{iron}, #{calcium},
+        #{zinc}, #{copper}, #{manganese}, #{potassium}, #{phosphorus}, #{sodium}, #{selenium})
+    </insert>
+
+    <!--
+        添加菜品分类
+        foreach: mybatis迭代标签
+            collection：集合参数名称
+            item： 别名
+            open：迭代开始 (
+            separator: 以...分割
+            close: 迭代结束符号
+    -->
+    <insert id="insertList" parameterType="com.coco.entity.Food">
+        insert into food values
+        <foreach collection="foods" item="i" separator=",">
+            (null, #{i.title}, #{i.typeId}, #{i.imageUrls}, #{i.nutrient}, #{i.heat},
+            #{i.protein}, #{i.fat}, #{i.carbonWater}, #{i.dietaryFiber}, #{i.vitaminA},
+            #{i.vitaminC}, #{i.vitaminE}, #{i.carrot}, #{i.vitaminB1}, #{i.vitaminB2},
+            #{i.niacin}, #{i.cholesterol}, #{i.magnesium}, #{i.iron}, #{i.calcium},
+            #{i.zinc}, #{i.copper}, #{i.manganese}, #{i.potassium}, #{i.phosphorus},
+            #{i.sodium}, #{i.selenium})
+        </foreach>
+    </insert>
+
+    <!-- 删除菜品分类 -->
+    <delete id="delete">
+        delete from food where id = #{id}
+    </delete>
+
+    <!-- 修改菜品分类 -->
+    <update id="update" parameterType="com.coco.entity.Food">
+        update food
+        <set>
+            <if test="title != null and title.length > 0">
+                title = #{title},
+            </if>
+            <if test="typeId != null">
+                type_id = #{typeId},
+            </if>
+            <if test="imageUrls != null and imageUrls.length > 0">
+                image_urls = #{imageUrls},
+            </if>
+            <if test="nutrient != null">
+                nutrient = #{nutrient},
+            </if>
+            <if test="heat != null">
+                heat = #{heat},
+            </if>
+            <if test="protein != null">
+                protein = #{protein},
+            </if>
+            <if test="fat != null">
+                fat = #{fat},
+            </if>
+            <if test="carbonWater != null">
+                carbon_water = #{carbonWater},
+            </if>
+            <if test="dietaryFiber != null">
+                dietary_fiber = #{dietaryFiber},
+            </if>
+            <if test="vitaminA != null">
+                vitamin_a = #{vitaminA},
+            </if>
+            <if test="vitaminC != null">
+                vitamin_c = #{vitaminC},
+            </if>
+            <if test="vitaminE != null">
+                vitamin_e = #{vitaminE},
+            </if>
+            <if test="carrot != null">
+                carrot = #{carrot},
+            </if>
+            <if test="vitaminB1 != null">
+                vitamin_b1 = #{vitaminB1},
+            </if>
+            <if test="vitaminB2 != null">
+                vitamin_b2 = #{vitaminB2},
+            </if>
+            <if test="niacin != null">
+                niacin = #{niacin},
+            </if>
+            <if test="cholesterol != null">
+                cholesterol = #{cholesterol},
+            </if>
+            <if test="magnesium != null">
+                magnesium = #{magnesium},
+            </if>
+            <if test="iron != null">
+                iron = #{iron},
+            </if>
+            <if test="calcium != null">
+                calcium = #{calcium},
+            </if>
+            <if test="zinc != null">
+                zinc = #{zinc},
+            </if>
+            <if test="copper != null">
+                copper = #{copper},
+            </if>
+            <if test="manganese != null">
+                manganese = #{manganese},
+            </if>
+            <if test="potassium != null">
+                potassium = #{potassium},
+            </if>
+            <if test="phosphorus != null">
+                phosphorus = #{phosphorus},
+            </if>
+            <if test="sodium != null">
+                sodium = #{sodium},
+            </if>
+            <if test="selenium != null">
+                selenium = #{selenium},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 分页查询菜品详情 -->
+    <select id="findPage" parameterType="java.lang.String" resultType="com.coco.entity.Food">
+        select * from food
+        <if test="queryString != null and queryString.length > 0">
+            where title like concat('%', #{queryString}, '%')
+        </if>
+    </select>
+
+    <!-- 根据菜品名匹配 -->
+    <select id="findByTitle" parameterType="java.lang.String" resultType="com.coco.entity.Food">
+        select * from food where title = #{title}
+    </select>
+
+
+    <!-- 根据菜品分类查询食物 -->
+    <select id="findByTypeId" parameterType="java.lang.String" resultType="com.coco.entity.Food">
+        select * from food where type_id = #{value}
+    </select>
+
+    <select id="findMiniPage" resultType="com.coco.entity.Food">
+        select * from food where type_id=#{typeId}
+        <if test="keywords != null and keywords.length > 0">
+            and title like concat('%', #{keywords}, '%')
+        </if>
+    </select>
+
+    <select id="findById" resultType="com.coco.entity.Food">
+        select * from food where id=#{id}
+    </select>
+
+</mapper>

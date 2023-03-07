@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.mapper.SportMapper">
+
+    <!-- 分页查询数据 -->
+    <select id="findPage" resultType="com.coco.entity.Sport">
+        select * from sport where del=0
+        <if test="queryString != null and queryString.length > 0">
+            and (title like concat('%', #{queryString}, '%') or content like concat('%', #{queryString}, '%'))
+        </if>
+    </select>
+
+    <select id="findInfo" resultType="com.coco.entity.Sport">
+        select * from sport where id=#{id}
+    </select>
+
+    <!-- 删除 -->
+    <delete id="delete" parameterType="java.lang.Long">
+        update sport set del=1 where id=#{id}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.coco.entity.Sport">
+        update sport
+        <set>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="content != null">
+                `content` = #{content},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateName != null">
+                update_name = #{updateName}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!-- 添加微信运动步数 -->
+    <insert id="insertStep" parameterType="com.coco.entity.WxRun">
+        insert into wx_run values
+        <foreach collection="runs" item="i" separator=",">
+            (#{i.openid}, #{i.time}, #{i.step})
+        </foreach>
+    </insert>
+
+</mapper>
